@@ -1,0 +1,7 @@
+package main
+
+func ({{.LowerTypeName}} {{.TypeName}}) SetUpdatedBy(id uint64) {
+    for i, item := range {{.LowerTypeName}} {
+        x.SetUpdatedBy(id)
+    }
+}

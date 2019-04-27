@@ -1,16 +1,18 @@
 package gomplate
 
 import (
-	"log"
+	"github.com/readystock/golog"
+	"go/ast"
 	"path/filepath"
 )
 
 type ReflectionInfo struct {
-	PackageName string
-	TypeName    string
+	PackageName   string
+	TypeName      string
+	LowerTypeName string
 }
 
-func GenerateTemplate(templateName string, typeNames []string, output string, args []string) {
+func GenerateTemplate(templateName string, typeName string, output string, args []string) {
 	// Parse the package once.
 	var dir string
 	g := Generator{
@@ -26,4 +28,15 @@ func GenerateTemplate(templateName string, typeNames []string, output string, ar
 
 	g.parsePackage(args, make([]string, 0))
 
+	values := make([]Value, 0, 100)
+	for _, file := range g.pkg.files {
+		// Set the state for this run of the walker.
+		file.typeName = typeName
+		file.values = nil
+		if file.file != nil {
+			ast.Inspect(file.file, file.genDecl)
+			values = append(values, file.values...)
+		}
+	}
+	golog.Infof("working in dir: %s", dir)
 }
